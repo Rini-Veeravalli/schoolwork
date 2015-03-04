@@ -6,11 +6,15 @@
 void usageinfo();
 int main(int argc, char *argv[])
 {
+  /*help message */
   if(argc == 1 || strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0)
     {
       usageinfo();
       return 0;
     }
+
+
+  
 }
 
 
