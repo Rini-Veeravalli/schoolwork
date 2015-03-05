@@ -4,6 +4,56 @@
 #include<string.h>
 
 
+
+void usageinfo();
+int error_messages(char *arg, int commandline, char *accessfile);
+int openfile(char *arg, int commandline, char *argv[]);
+int compare(int commandline, FILE *dictfile, char *argv[]);
+
+
+
+/*main*/
+int main(int argc, char *argv[])
+{
+  char *Mode = argv[1];
+  char *whichFile = argv[2];
+  char *word = argv[3];
+  /*help message */
+  if(argc == 1 || strcmp(Mode, "-h") == 0 || strcmp(Mode, "--help") == 0)
+    {
+      usageinfo();
+      return 0;
+    }
+  /* error messages */
+  printf("hi there.. \n");
+  if(error_messages(Mode, argc, whichFile) == 0)
+    {
+      return 0;
+    }
+  else if(error_messages(Mode, argc, whichFile) == 1)
+    {
+      return 1;
+    }
+
+  /*open file and compare */
+  printf("hi there.. \n");
+  if(openfile(whichFile, argc, argv) == 0)
+    {
+      return 0;
+    }
+  else if(openfile(whichFile, argc, argv) == 1)
+    {
+      return 1;
+    }
+
+  
+    
+  return 0;
+}
+
+
+
+
 /*help message */
 void usageinfo()
 {
@@ -15,6 +65,7 @@ void usageinfo()
   printf("codeword.exe --codeword-show CSVFILE         : Show codeword from csv file.\n");
 }
 
+/* errors for usage, wrong files */
 int error_messages(char *arg, int commandline, char *accessfile )
 {
   if(strcmp(arg, "--spellcheck") != 0)
@@ -27,73 +78,85 @@ int error_messages(char *arg, int commandline, char *accessfile )
       fprintf(stderr, "Usage: codeword.exe --spellcheck DICTFILE WORDS\n");
       return 1; 
     }
-  
+ 
 
-  if(!strcmp(accessfile, "text_file/words.txt") == 0 || !strcmp(accessfile, "text_file/words3.txt") == 0)
+  if((!strcmp(accessfile, "test_files/words.txt") == 0) && (!strcmp(accessfile, "test_files/words3.txt") == 0))
     {
       fprintf(stderr, "Error: \"%s\" does not exist.\n", accessfile);
       return 1;
     }
-  return 1; 
+  return 2;
 }
 
-int openfile(char *arg)
+/*compare the file with some words */ 
+int compare(int commandline, FILE *dictfile, char *argv[])
 {
-  if(strcmp(arg, "text_file/words.txt") == 0)
+  const static int maxlength = 256;
+  char line[maxlength];
+  
+  ; /*do i need this ?*/
+  for (int counter =3; counter <= commandline; counter++) /* counter to handle multiple word checks */
     {
-      char *dictfile = "text_file/words.txt";
-      FILE *file = fopen(dictfile, "r");
-      if(file == NULL)
+      while(fgets(line, maxlength, dictfile)) /*reading the file in each line */
         {
-          fprintf(stderr, "Unable to open \"%s\"", dictfile);
-          return 1;
+          if(dictfile  == NULL) /*if end of file then no word match*/
+            {
+              fprintf(stderr, "\"%s\" is incorrect", argv[counter]);
+              return 1;
+            }
+          line[strlen(line-1)] = '\0'; /* replace the \n with '\0'? */
+          if(strcmp(line, argv[counter] ) == 0)
+            {
+              printf("\"%s\" is correct.", argv[counter]);
+              return 0;
+            }
+          
         }
+                    
+    }
+  return 2;
+}
+
+ /* read file and compare */
+int openfile(char *arg,int commandline, char *argv[])
+{  
+  if(strcmp(arg, "text_files/words.txt") == 0)
+    {
       
+      char *dictfile = "text_files/words.txt";
+      FILE *file = fopen(dictfile, "r");
+      if(file == NULL) /*if at the end of a file, error */ 
+        {
+          fprintf(stderr, "Unable to open \"%s\"", dictfile);
+          return 1;
+        }
+      if(compare(commandline, file, argv) == 0)
+        {
+          return 0;
+        }
+      else
+        {
+          return 1;
+        }
     }
-  else if(strcmp(arg, "text_file/words3.txt") == 0)
+  else if(strcmp(arg, "text_files/words3.txt") == 0)
     {
-      char *dictfile = "text_file/words3.txt";
+      char *dictfile = "text_files/words3.txt";
       FILE *file = fopen(dictfile, "r");
       if(file == NULL)
         {
           fprintf(stderr, "Unable to open \"%s\"", dictfile);
           return 1;
         }
+      if(compare(commandline,file, argv) == 0)
+        {
+          return 0;
+        }
+      else
+        {
+          return 1;
+        }
     }
-  return 1;
+  return 2;
 }
 
-
-
-
-/*main*/
-int main(int argc, char *argv[])
-{
-  char *Mode = argv[1];
-  char *whichFile = argv[2];
-  /*help message */
-  if(argc == 1 || strcmp(Mode, "-h") == 0 || strcmp(Mode, "--help") == 0)
-    {
-      usageinfo();
-      return 0;
-    }
-  /* error messages */ 
-  if(error_messages(Mode, argc, whichFile) == 0)
-    {
-      return 0;
-    }
-  else
-    {
-      return 1;
-    }
-
-  /*readfile*/
-  if(openfile(whichFile) == 0)
-    {
-      return 0;
-    }
-  else
-    {
-      return 1;
-    }
-}
