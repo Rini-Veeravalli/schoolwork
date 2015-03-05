@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
       return 0;
     }
   /* error messages */
-  printf("hi there.. \n");
+  printf("hi there.\n");
   if(error_messages(Mode, argc, whichFile) == 0)
     {
       return 0;
@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
       return 1;
     }
 
-  
+  printf("hi there... \n");
     
   return 0;
 }
@@ -91,39 +91,42 @@ int error_messages(char *arg, int commandline, char *accessfile )
 /*compare the file with some words */ 
 int compare(int commandline, FILE *dictfile, char *argv[])
 {
+  printf("hi compare.\n");
   const static int maxlength = 256;
   char line[maxlength];
   
   ; /*do i need this ?*/
   for (int counter =3; counter <= commandline; counter++) /* counter to handle multiple word checks */
     {
-      while(fgets(line, maxlength, dictfile)) /*reading the file in each line */
+      while(fgets(line, maxlength, dictfile) != NULL) /*reading the file in each line */
         {
-          if(dictfile  == NULL) /*if end of file then no word match*/
-            {
-              fprintf(stderr, "\"%s\" is incorrect", argv[counter]);
-              return 1;
-            }
+          
           line[strlen(line-1)] = '\0'; /* replace the \n with '\0'? */
           if(strcmp(line, argv[counter] ) == 0)
             {
               printf("\"%s\" is correct.", argv[counter]);
               return 0;
             }
-          
+         
+        }
+      if(dictfile  == NULL) /*if end of file then no word match*/
+        {
+          fprintf(stderr, "\"%s\" is incorrect", argv[counter]);
+          return 1;
         }
                     
     }
+  printf("hi compre..\n");
   return 2;
 }
 
  /* read file and compare */
 int openfile(char *arg,int commandline, char *argv[])
-{  
-  if(strcmp(arg, "text_files/words.txt") == 0)
+{
+  printf("hi openfile.\n");
+  if(strcmp(arg, "test_files/words.txt") == 0)
     {
-      
-      char *dictfile = "text_files/words.txt";
+      char *dictfile = "test_files/words.txt";
       FILE *file = fopen(dictfile, "r");
       if(file == NULL) /*if at the end of a file, error */ 
         {
@@ -139,9 +142,9 @@ int openfile(char *arg,int commandline, char *argv[])
           return 1;
         }
     }
-  else if(strcmp(arg, "text_files/words3.txt") == 0)
+  else if(strcmp(arg, "test_files/words3.txt") == 0)
     {
-      char *dictfile = "text_files/words3.txt";
+      char *dictfile = "test_files/words3.txt";
       FILE *file = fopen(dictfile, "r");
       if(file == NULL)
         {
@@ -157,6 +160,7 @@ int openfile(char *arg,int commandline, char *argv[])
           return 1;
         }
     }
+  printf("hi openfile..\n");
   return 2;
 }
 
